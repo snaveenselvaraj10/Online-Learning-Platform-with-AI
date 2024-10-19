@@ -2,7 +2,7 @@
 {
     public class CourseRecommendation
     {
-        public int RecommendationId { get; set; }
+        public int RecommendationId { get; set; }  // Primary Key
         public int UserId { get; set; }
         public User User { get; set; }
         public int CourseId { get; set; }
