@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Online_Learning_Platform.Models;
 
 namespace Online_Learning_Platform.Data
@@ -17,6 +18,15 @@ namespace Online_Learning_Platform.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().HasData(
+                new User { UserId = 1, Username = "John Doe", Email = "john.doe@example.com", PasswordHash="Asdf" },
+                new User { UserId = 2, Username = "Jane Smith", Email = "jane.smith@example.com", PasswordHash="Asdf" }
+            );
+            modelBuilder.Entity<Course>().HasData(
+               new Course { CourseId = 1, Title = "Introduction to AI", Description = "Learn the basics of AI." },
+               new Course { CourseId = 2, Title = "Advanced AI", Description = "Deep dive into AI technologies." }
+           );
+
             modelBuilder.Entity<UserCourse>()
                 .HasKey(uc => new { uc.UserId, uc.CourseId }); 
             modelBuilder.Entity<UserCourse>()
