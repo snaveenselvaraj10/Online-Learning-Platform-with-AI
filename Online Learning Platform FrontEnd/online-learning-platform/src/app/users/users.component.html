@@ -1,4 +1,9 @@
-<h2>Users</h2>
-<ul>
-  <li *ngFor="let user of users">{{ user.name }}</li>
-</ul>
+<div *ngIf="loading">Loading users...</div>
+<div *ngIf="!loading && error">{{ error }}</div>
+<div *ngIf="!loading && !error">
+  <ul>
+    <li *ngFor="let user of users">
+      {{ user.name }} - {{ user.email }}
+    </li>
+  </ul>
+</div>

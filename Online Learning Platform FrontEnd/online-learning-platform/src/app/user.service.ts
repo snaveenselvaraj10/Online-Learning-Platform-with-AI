@@ -1,19 +1,41 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root' // This allows the service to be injected application-wide
+  providedIn: 'root'
 })
 export class UserService {
-  private apiUrl = 'https://localhost:44391/api/users'; // Replace with your actual API URL
+  private apiUrl = 'https://localhost:7013/api/User'; // URL to your API
 
   constructor(private http: HttpClient) { }
 
-  // Method to get all users
-  getUsers(): Observable<any[]> {
-    return this.http.get<any[]>(this.apiUrl);
+  // Get all users
+  getUsers(): Observable<User[]> {
+    return this.http.get<User[]>(this.apiUrl).pipe(
+      catchError(this.handleError)
+    );
   }
 
-  // Additional methods to interact with user-related endpoints can be added here
+  // Handle any error that may occur
+  private handleError(error: HttpErrorResponse) {
+    let errorMessage = 'Unknown error!';
+    if (error.error instanceof ErrorEvent) {
+      // Client-side error
+      errorMessage = `Error: ${error.error.message}`;
+    } else {
+      // Server-side error
+      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    return throwError(() => new Error(errorMessage));
+  }
+}
+
+// Define the User interface
+export interface User {
+  userId: number;
+  name: string;
+  email: string;
+  enrolledCourses: any[]; // Add any other properties your User model has
 }

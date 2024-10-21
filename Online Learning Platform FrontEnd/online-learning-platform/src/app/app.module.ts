@@ -1,22 +1,28 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
+import { HttpClientModule } from '@angular/common/http'; 
+import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
-import { UsersComponent } from './users/users.component';
+import { UserComponent } from './users/users.component';
 import { CoursesComponent } from './courses/courses.component';
+import { CourseService } from 'src/app/course.service';
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { UserService } from './user.service';
 
 @NgModule({
   declarations: [
     AppComponent,
-    UsersComponent,
-    CoursesComponent
+    UserComponent,
+    CoursesComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
-    HttpClientModule // Add HttpClientModule here
+    HttpClientModule,
+    AppRoutingModule
   ],
-  providers: [],
+  providers: [CourseService,UserService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
