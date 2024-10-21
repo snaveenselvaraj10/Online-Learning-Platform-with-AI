@@ -1,0 +1,12 @@
+<div *ngIf="course">
+    <h2>{{ course.title }}</h2>
+    <p>{{ course.description }}</p>
+  
+    <h3>Articles</h3>
+    <ul>
+      <li *ngFor="let article of course.articles">
+        {{ article.title }}
+      </li>
+    </ul>
+  </div>
+  

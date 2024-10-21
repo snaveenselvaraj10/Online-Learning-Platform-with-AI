@@ -1,9 +1,12 @@
-<div *ngIf="loading">Loading users...</div>
-<div *ngIf="!loading && error">{{ error }}</div>
-<div *ngIf="!loading && !error">
-  <ul>
-    <li *ngFor="let user of users">
-      {{ user.name }} - {{ user.email }}
-    </li>
-  </ul>
+<div class="container mt-4">
+  <h2>Users</h2>
+  <div *ngIf="loading" class="alert alert-info">Loading users...</div>
+  <div *ngIf="!loading && error" class="alert alert-danger">{{ error }}</div>
+  <div *ngIf="!loading && !error">
+    <ul class="list-group">
+      <li *ngFor="let user of users" class="list-group-item">
+        {{ user.name }} - {{ user.email }}
+      </li>
+    </ul>
+  </div>
 </div>

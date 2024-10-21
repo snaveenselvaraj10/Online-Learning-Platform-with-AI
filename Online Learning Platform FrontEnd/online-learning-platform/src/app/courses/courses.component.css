@@ -1,0 +1,18 @@
+.container {
+    padding-top: 20px;
+  }
+  
+  .list-group-item {
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+    border: 1px solid #ddd;
+  }
+  
+  .list-group-item:hover {
+    background-color: #f8f9fa;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  

@@ -1,32 +1,29 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService, User } from 'src/app/user.service'; // Import the service and User interface
+import { UserService } from 'src/app/user.service';
+import { User } from 'src/app/models/User.model';
 
 @Component({
-  selector: 'app-users',                     // The component selector
-  templateUrl: './users.component.html',       // The component template
-  styleUrls: ['./users.component.css']         // The component styles
+  selector: 'app-user',
+  templateUrl: './users.component.html',
+  styleUrls: ['./users.component.css']
 })
 export class UserComponent implements OnInit {
   users: User[] = [];
-  error: string = '';
-  loading: boolean = true;
+  loading = true;
+  error: string | null = null;
 
   constructor(private userService: UserService) { }
 
   ngOnInit(): void {
-    this.fetchUsers();
-  }
-
-  fetchUsers(): void {
-    this.userService.getUsers().subscribe({
-      next: (data) => {
-        this.users = data;
+    this.userService.getUsers().subscribe(
+      users => {
+        this.users = users;
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err.message;
+      error => {
+        this.error = 'Error fetching users.';
         this.loading = false;
       }
-    });
+    );
   }
 }

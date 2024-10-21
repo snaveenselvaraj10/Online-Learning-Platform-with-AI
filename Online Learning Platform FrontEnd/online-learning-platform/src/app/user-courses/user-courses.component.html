@@ -1,0 +1,24 @@
+<div *ngIf="loading">Loading courses...</div>
+<div *ngIf="!loading && error">{{ error }}</div>
+
+<div *ngIf="!loading && !error">
+  <ul class="list-group">
+    <li *ngFor="let course of courses" class="list-group-item">
+      <h5>{{ course.title }}</h5>
+      <p>{{ course.description }}</p>
+
+      <!-- Unenroll from a course button -->
+      <button class="btn btn-danger" (click)="unenrollFromCourse(course.courseId)">
+        Unenroll
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- Section to enroll in new courses -->
+<div class="enroll-section">
+  <h3>Enroll in a new course:</h3>
+  <!-- Hardcoded list of course IDs for demo purposes. Ideally, this should be dynamic -->
+  <button class="btn btn-primary" (click)="enrollInCourse(101)">Enroll in Course 101</button>
+  <button class="btn btn-primary" (click)="enrollInCourse(102)">Enroll in Course 102</button>
+</div>

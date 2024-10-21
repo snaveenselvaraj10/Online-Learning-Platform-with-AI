@@ -1,41 +1,46 @@
 import { Component, OnInit } from '@angular/core';
-import { CourseService } from 'src/app/course.service'; // Import the service
+import { CourseService } from 'src/app/course.service'; 
+import { Course } from '../models/Course.model';
 
-// Define the interface for the Course model
-interface Course {
-  courseId: number;
-  title: string;
-  description: string;
-  articles: any[];
-  userCourses: any[];
-}
 
 @Component({
-  selector: 'app-courses',                    // The component selector
-  templateUrl: './courses.component.html',     // Path to the component's template
-  styleUrls: ['./courses.component.css']       // Path to the component's stylesheet
+  selector: 'app-courses',
+  templateUrl: './courses.component.html',
+  styleUrls: ['./courses.component.css']
 })
 export class CoursesComponent implements OnInit {
   courses: Course[] = [];
-  error: string = '';
-  loading: boolean = true;
+  loading = true;
+  error: string | null = null;
+  searchTerm: string = ''; // Define searchTerm property
 
-  constructor(private courseService: CourseService) {} // Inject the CourseService
+  constructor(private courseService: CourseService) {}
 
-  ngOnInit(): void {
-    this.fetchCourses();
-  }
-
-  fetchCourses(): void {
-    this.courseService.getCourses().subscribe({
-      next: (data) => {
-        this.courses = data;
+  ngOnInit() {
+    this.courseService.getCourses().subscribe(
+      (data: Course[]) => {
+        this.courses = data.map(course => ({
+          ...course,
+          articles: course.articles || [] // Ensure articles is always an array
+        }));
         this.loading = false;
       },
-      error: (err) => {
-        this.error = err.message;
+      (error) => {
+        this.error = 'Failed to load courses';
         this.loading = false;
       }
-    });
+    );
   }
+  
+  filteredCourses() {
+    if (!this.searchTerm) {
+      return this.courses; // Return all courses if no search term is entered
+    }
+  
+    return this.courses.filter(course =>
+      course.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+      course.description.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+  
 }

@@ -1,6 +1,41 @@
-<h2>Courses List</h2>
-<ul>
-  <li *ngFor="let course of courses">
-    {{ course.title }} - {{ course.description }}
-  </li>
-</ul>
+<div class="container mt-3">
+  <h2>Courses</h2>
+
+  <!-- Search input for filtering courses -->
+  <div class="mb-3">
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      class="form-control"
+      placeholder="Search courses..."
+    />
+  </div>
+
+  <!-- Display loading message -->
+  <div *ngIf="loading">Loading courses...</div>
+
+  <!-- Display error message if there's an error -->
+  <div *ngIf="!loading && error">{{ error }}</div>
+
+  <!-- Display courses if loading is done and there's no error -->
+  <div *ngIf="!loading && !error">
+    <div *ngFor="let course of filteredCourses()" class="card mb-3">
+      <div class="card-body">
+        <h3>{{ course.title }}</h3>
+        <p>{{ course.description }}</p>
+
+        <div *ngIf="course.articles.length > 0">  <!-- Removed the optional chaining -->
+          <strong>Articles:</strong>
+          <ul>
+            <li *ngFor="let article of course.articles">{{ article.title }}</li>
+          </ul>
+        </div>
+      
+        <!-- Display a message if there are no articles -->
+        <div *ngIf="!course.articles || course.articles.length === 0">
+          No articles available for this course.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
