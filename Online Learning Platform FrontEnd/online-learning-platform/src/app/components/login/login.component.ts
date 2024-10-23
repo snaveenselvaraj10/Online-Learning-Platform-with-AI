@@ -24,7 +24,6 @@ export class LoginComponent {
       next: (response) => {
         console.log(response); 
         if (response.message === "Success") {  
-          console.log("Hi Helo")
           this.router.navigate(['/courses']);  
         } else {
           this.errorMessage = 'Invalid email or password';
