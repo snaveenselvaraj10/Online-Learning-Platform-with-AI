@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CourseService } from 'src/app/course.service'; 
 import { Course } from '../models/Course.model';
-
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-courses',
@@ -12,7 +12,10 @@ export class CoursesComponent implements OnInit {
   courses: Course[] = [];
   loading = true;
   error: string | null = null;
-  searchTerm: string = ''; // Define searchTerm property
+  userId: number = 0;
+  searchTerm: string = ''; 
+  errorMessage: string = '';
+  successMessage: string = '';
 
   constructor(private courseService: CourseService) {}
 
@@ -41,6 +44,17 @@ export class CoursesComponent implements OnInit {
       course.title.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
       course.description.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
+  }
+
+  enroll(courseId: number): void {
+    this.courseService.enrollInCourse(courseId, this.userId).subscribe({
+      next: () => {
+        this.successMessage = 'Successfully enrolled in the course';
+      },
+      error: () => {
+        this.errorMessage = 'Failed to enroll in the course';
+      }
+    });
   }
   
 }

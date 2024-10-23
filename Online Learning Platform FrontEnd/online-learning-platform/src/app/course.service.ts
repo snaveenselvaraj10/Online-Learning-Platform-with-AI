@@ -18,4 +18,7 @@ export class CourseService {
   getCourseById(courseId: number): Observable<Course> {
     return this.http.get<Course>(`${this.apiUrl}/${courseId}`);
   }
+  enrollInCourse(courseId: number, userId: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${courseId}/enroll`, { userId });
+  }
 }

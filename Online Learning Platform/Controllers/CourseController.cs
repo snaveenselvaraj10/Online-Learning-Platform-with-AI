@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Online_Learning_Platform.Models;
+using Online_Learning_Platform.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Online_Learning_Platform.Data;
-using Online_Learning_Platform.Models;
 
 namespace Online_Learning_Platform.Controllers
 {
@@ -23,14 +22,16 @@ namespace Online_Learning_Platform.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Course>>> GetCourses()
         {
-            return await _context.Courses.ToListAsync();
+            return await _context.Courses.Include(c => c.Articles).ToListAsync();
         }
 
         // GET: api/course/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Course>> GetCourse(int id)
         {
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                .Include(c => c.Articles) // Include articles in the response
+                .FirstOrDefaultAsync(c => c.CourseId == id);
 
             if (course == null)
             {
@@ -94,6 +95,44 @@ namespace Online_Learning_Platform.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // POST: api/course/{courseId}/enroll
+        [HttpPost("{courseId}/enroll")]
+        public async Task<IActionResult> EnrollInCourse(int courseId, [FromBody] int userId)
+        {
+            var course = await _context.Courses.FindAsync(courseId);
+            if (course == null)
+            {
+                return NotFound(new { message = "Course not found" });
+            }
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            var userCourse = new UserCourse
+            {
+                UserId = userId,
+                CourseId = courseId,
+                EnrolledDate = System.DateTime.UtcNow
+            };
+
+            // Check if the user is already enrolled in the course
+            var existingEnrollment = await _context.UserCourses
+                .FirstOrDefaultAsync(uc => uc.UserId == userId && uc.CourseId == courseId);
+
+            if (existingEnrollment != null)
+            {
+                return Conflict(new { message = "User is already enrolled in this course" });
+            }
+
+            _context.UserCourses.Add(userCourse);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Enrollment successful" });
         }
 
         private bool CourseExists(int id)

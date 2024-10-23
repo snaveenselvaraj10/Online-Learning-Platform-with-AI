@@ -4,7 +4,6 @@ using Online_Learning_Platform.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Online_Learning_Platform.Data;
-using Online_Learning_Platform.Models;
 
 namespace Online_Learning_Platform.Controllers
 {
@@ -89,5 +88,24 @@ namespace Online_Learning_Platform.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("{userId}/enrolled-courses")]
+        public async Task<ActionResult<IEnumerable<Course>>> GetEnrolledCourses(int userId)
+        {
+            var user = await _context.Users
+                .Include(u => u.UserCourses)
+                .ThenInclude(uc => uc.Course)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var enrolledCourses = user.UserCourses.Select(uc => uc.Course).ToList();
+
+            return Ok(enrolledCourses);
+        }
+
     }
 }
