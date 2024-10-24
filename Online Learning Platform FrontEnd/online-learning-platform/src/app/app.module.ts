@@ -12,6 +12,9 @@ import { UserService } from './user.service';
 import { CourseDetailsComponent } from './course-details/course-details.component';
 import { ArticlesComponent } from './articles/articles.component';
 import { UserCoursesComponent } from './user-courses/user-courses.component';
+import { LoginComponent } from './components/login/login.component';
+import { RegisterComponent } from './components/register/register.component';
+import { EnrolledCoursesComponent } from './enrolled-courses/enrolled-courses.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,10 @@ import { UserCoursesComponent } from './user-courses/user-courses.component';
     PageNotFoundComponent,
     CourseDetailsComponent,
     ArticlesComponent,
-    UserCoursesComponent
+    UserCoursesComponent,
+    LoginComponent,
+    RegisterComponent,
+    EnrolledCoursesComponent
   ],
   imports: [
     BrowserModule,

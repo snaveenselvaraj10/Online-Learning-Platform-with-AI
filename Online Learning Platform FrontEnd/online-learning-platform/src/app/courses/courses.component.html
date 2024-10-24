@@ -12,30 +12,46 @@
   </div>
 
   <!-- Display loading message -->
-  <div *ngIf="loading">Loading courses...</div>
+  <div *ngIf="loading" class="alert alert-info">
+    Loading courses...
+  </div>
 
   <!-- Display error message if there's an error -->
-  <div *ngIf="!loading && error">{{ error }}</div>
+  <div *ngIf="!loading && error" class="alert alert-danger">
+    {{ error }}
+  </div>
 
   <!-- Display courses if loading is done and there's no error -->
   <div *ngIf="!loading && !error">
-    <div *ngFor="let course of filteredCourses()" class="card mb-3">
+    <div *ngFor="let course of filteredCourses()" class="card mb-3 shadow-sm">
       <div class="card-body">
-        <h3>{{ course.title }}</h3>
-        <p>{{ course.description }}</p>
+        <h3 class="card-title">{{ course.title }}</h3>
+        <p class="card-text">{{ course.description }}</p>
 
-        <div *ngIf="course.articles.length > 0">  <!-- Removed the optional chaining -->
-          <strong>Articles:</strong>
-          <ul>
-            <li *ngFor="let article of course.articles">{{ article.title }}</li>
+        <!-- Display the articles if they exist and have a length greater than 0 -->
+        <div *ngIf="course.articles && course.articles.length > 0">
+          <h5>Articles:</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item" *ngFor="let article of course.articles">
+              {{ article.title }}
+            </li>
           </ul>
         </div>
-      
+
         <!-- Display a message if there are no articles -->
-        <div *ngIf="!course.articles || course.articles.length === 0">
+        <div *ngIf="!course.articles || course.articles.length === 0" class="text-muted">
           No articles available for this course.
         </div>
+
+        <!-- Enrollment button -->
+        <button
+          class="btn btn-primary mt-3"
+          (click)="enroll(course.courseId)"
+        >
+          Enroll
+        </button>
       </div>
+      <div><a routerLink="/enrolled-courses" class="nav-link">My Enrolled Courses</a></div>
     </div>
   </div>
 </div>

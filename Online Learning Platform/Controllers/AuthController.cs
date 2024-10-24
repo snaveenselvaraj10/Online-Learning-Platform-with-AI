@@ -1,48 +1,64 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Online_Learning_Platform.Models;
+using OnlineLearningPlatform.DTOs;    // DTOs for Registration and Login
+using System.Linq;
+using System.Threading.Tasks;
+using BCrypt.Net;  // For hashing passwords
+using Online_Learning_Platform.Data;
 
-namespace Online_Learning_Platform.Controllers
+namespace OnlineLearningPlatform.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
-        [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginModel login)
+        private readonly LearningPlatformContext _context;
+
+        public AuthController(LearningPlatformContext context)
         {
-            // In a real application, validate the user's credentials here
-            if (login.Username == "admin" && login.Password == "password")
+            _context = context;
+        }
+
+        // POST: api/auth/register
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] UserRegisterDto request)
+        {
+            // Check if user with same email exists
+            if (_context.Users.Any(u => u.Email == request.Email))
             {
-                var token = GenerateJwtToken(login.Username);
-                return Ok(new { token });
+                return BadRequest(new { message = "User already exists with the given email." });
             }
-            return Unauthorized();
-        }
 
-        private string GenerateJwtToken(string username)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes("Your_Secret_Key_Here"); // Use the same key as in Program.cs
-            var tokenDescriptor = new SecurityTokenDescriptor
+            // Create new user and hash the password
+            var user = new User
             {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, username)
-                }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                Username = request.Username,
+                Email = request.Email,
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
             };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
-        }
-    }
 
-    public class LoginModel
-    {
-        public string Username { get; set; }
-        public string Password { get; set; }
+            // Add user to the database
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "User registered successfully." });
+        }
+
+        // POST: api/auth/login
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto request)
+        {
+            // Find user by email
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            {
+                return BadRequest(new { message = "Invalid credentials" });
+            }
+
+            // Normally, you would return a JWT token here for further authentication
+            return Ok(new { message = "Success" });
+        }
     }
 }
